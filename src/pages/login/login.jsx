@@ -1,9 +1,13 @@
 import React, { Component } from "react";
 import {Form, Icon, Input, Button, message} from 'antd';
+import {Redirect} from "react-router";
 
 import "./login.less"
-import logo from "./images/icon1.jpg"
+import logo from "../../assets/images/icon1.jpg"
+import memoryUtils from "../../utils/memoryUtils";
+import storageUtils from "../../utils/storageUtils";
 import {reqLogin} from "../../api"
+
 
 class Login extends Component {
     handleSubmit = (event) => {
@@ -15,6 +19,8 @@ class Login extends Component {
                 const result = {status: 0, msg: ""};
                 if (result.status === 0) {
                     message.success("登录成功！");
+                    memoryUtils.user = {name :"user001"};
+                    storageUtils.saveUser(memoryUtils.user);
                     this.props.history.replace("/");
                 }else {
                     message.error(result.msg);
@@ -24,6 +30,11 @@ class Login extends Component {
     };
 
     render() {
+        const user = memoryUtils.user;
+        if (user && user.name) {
+            return <Redirect to="/" />;
+        }
+
         const { getFieldDecorator } = this.props.form;
         return <div className="login">
             <header className="login-header">
@@ -45,7 +56,7 @@ class Login extends Component {
                         </Form.Item>
                         <Form.Item>
                             {getFieldDecorator("password", {
-                                rules: [{ required: true, message: 'Please input your Password!' }],
+                                rules: [{ required: true, message: 'Please input your password!' }],
                             })(
                                 <Input
                                     prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
